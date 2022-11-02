@@ -1,2 +1,40 @@
 @use "mixins";
-@use "variables"
+@use "variables";
+
+// html, body {
+//     font-family: 'Poppins', sans-serif;
+// }
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: lightgray;
+    background-image: linear-gradient(120deg, #f6d365, #fda085);
+    margin-top:20vh;
+
+}
+
+.inputContainer{
+    display: flex;
+    display: block;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: white;
+    margin-left: 25vw;
+    width: 50%;
+    margin-top: 20px;
+    border-radius: 15px;
+}
+
+.ulTag {
+    list-style-type: none;
+}
+
+
+
