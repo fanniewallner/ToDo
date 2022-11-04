@@ -162,3 +162,11 @@ function moveToCompletedTasks(checkedList) {
   checkedList.isCompleted = !checkedList.isCompleted;
   moveTask();
 }
+
+
+//Saker att ordna
+/* 
+- Fixa så att hela listan inte flyttar till completed tasks när en checkbox checkas i 
+- LS
+- Ordna så man kan checka i och ur tasks
+- fixa så att listan inte dubbleras när man färdigmarkerat en task och lägger till ytterligare en task efter det
