@@ -8,6 +8,11 @@ listContainer.classList.add("container");
 document.body.appendChild(inputContainer);
 document.body.appendChild(listContainer);
 
+//incomplete title
+incompletedTitle = document.createElement("h3");
+incompletedTitle.innerHTML = "To do";
+listContainer.appendChild(incompletedTitle);
+
 //Title
 const listTitle = document.createElement("h2");
 listTitle.classList.add("title");
@@ -29,6 +34,12 @@ inputBtn.setAttribute("value", "addTask");
 inputBtn.innerHTML = "Add task";
 inputContainer.appendChild(inputBtn);
 
+//Sorticon
+let sortIcon = document.createElement("i");
+sortIcon.setAttribute("id", "sortIcon");
+incompletedTitle.appendChild(sortIcon);
+sortIcon.innerHTML = '<i class="fas fa-angle-double-down"></i>';
+
 //Second list och containers for completed tasks
 completedContainer = document.createElement("div");
 completedContainer.classList.add("completedContainer");
@@ -42,10 +53,7 @@ let ulTagDone = document.createElement("ul"); //
 ulTagDone.classList.add("ulDone"); //
 completedContainer.appendChild(ulTagDone); //
 
-//New list for completed tasks
-let newList = [];
-
-//Create class
+//Skapar klass
 class TaskItem {
   constructor(description, isCompleted) {
     this.description = description;
@@ -59,89 +67,67 @@ let task2 = new TaskItem("Walk the dog", false);
 let task3 = new TaskItem("Cry", false);
 let task4 = new TaskItem("Finish hand-in assignment", false);
 
-let list = [];
+list = [];
+list = [task1, task2, task3, task4];
+localStorage.setItem("LSlist", JSON.stringify(list));
 
 let ulTag = document.createElement("ul");
 ulTag.classList.add("ulTag");
 
-let listItemsCheckbox;
-let listItemsDelete;
-
+//Funktion som skapar HTML
 function createHTML() {
-  ulTag.innerHTML = "";
+  ulTag.innerHTML = ""; //Tömmer ulTag innan loop så att objekten av hårdkodade objekt inte dubbleras
+  ulTagDone.innerHTML = ""; //Tömmer ulTagDone innan loopen så att objekten där i inte dubbleras
+  //Array.from(JSON.parse(localStorage.getItem("list"))); ////////////// Hämtar lista i text från LS och gör om till objekt
   for (let i = 0; i < list.length; i++) {
-    let checkedList = list[i];
-    let listItems = document.createElement("li");
+    let checkedList = list[i]; //ändra till currentobject ist för checkedlist
+    listItems = document.createElement("li");
     listItems.classList.add("tasks");
-    listItems.innerText = list[i].description;
-    let listItemsCheckbox = document.createElement("input");
-    listItemsCheckbox.setAttribute("type", "checkbox");
-    listItemsCheckbox.setAttribute("id", "checked");
+    listItems.innerText = list[i].description; //Li:s innerText blir task på position i
+    let listItemsCheckbox = document.createElement("input"); //Skapar input som ska bli checkbox
+    listItemsCheckbox.setAttribute("type", "checkbox"); //Lägg till attribut på input så att det bnlir checkbox
+    listItemsCheckbox.setAttribute("id", "checked"); //Lägger till id på checkbox
     listItemsCheckbox.checked = checkedList.isCompleted;
-    listItemsCheckbox.addEventListener("change", (event) => {
-      let a = event.target.closest("input").checked;
-      if (a) event.target.closest("li").style.textDecoration = "line-through";
-      else event.target.closest("li").style.textDecoration = "none";
-      moveToCompletedTasks(checkedList);
+    listItemsCheckbox.addEventListener("change", () => {
+      //eventListener på checkbox, lyssnar efter change, triggar funktion movedToCompletedTasks
+      moveToCompletedTasks(checkedList); //Skickar med objektet på pos i till funktionen moceToCompletedTasks
     });
 
     let listItemsDelete = document.createElement("button");
     listItemsDelete.setAttribute("type", "button");
     listItemsDelete.innerHTML = '<i class="fas fa-trash"></i>';
-    listContainer.appendChild(ulTag);
-    ulTag.appendChild(listItems);
-    listItems.appendChild(listItemsCheckbox);
-    listItems.appendChild(listItemsDelete);
 
-    //DELETEFUNKTION
+    if (!checkedList.isCompleted) {
+      //Om checkboxens värde är falsed ska den appendas till första div:en, dvs icke färdiga
+      listContainer.appendChild(ulTag);
+      ulTag.appendChild(listItems);
+      listItems.appendChild(listItemsCheckbox);
+      listItems.appendChild(listItemsDelete);
+    } else {
+      completedContainer.appendChild(ulTagDone); //Om checkboxens värde inte är false, dvs true ska den appendas till den nedre div:en med färdiga tasks
+      ulTagDone.appendChild(listItems);
+      listItems.appendChild(listItemsCheckbox);
+      listItems.appendChild(listItemsDelete);
+    }
+
+    //Funktion som tar bort todos
     listItemsDelete.addEventListener("click", function () {
-      list.splice(i, 1);
+      var deletedItem = list.splice(i, 1); //ställer sig på listan på position i och tar bort 1
+      //localStorage.setItem(JSON.stringify("deletedList", list)); ////////////////////////// LS when deleted
       createHTML();
     });
   }
 }
 
-///FLYTTA FUNKTION
-function moveTask() {
-  ulTag.innerHTML = "";
-  for (let i = 0; i < list.length; i++) {
-    let checkedList = list[i];
-    let listItems = document.createElement("li");
-    listItems.classList.add("tasks");
-    listItems.innerText = list[i].description;
-    let listItemsCheckbox = document.createElement("input");
-    listItemsCheckbox.setAttribute("type", "checkbox");
-    listItemsCheckbox.setAttribute("id", "checked");
-    listItemsCheckbox.checked = checkedList.isCompleted;
-    listItemsCheckbox.addEventListener("change", (event) => {
-      let a = event.target.closest("input").checked;
-      if (a) event.target.closest("li").style.textDecoration = "line-through";
-      else event.target.closest("li").style.textDecoration = "none";
-      moveToCompletedTasks(checkedList);
-    });
-
-    let listItemsDelete = document.createElement("button");
-    listItemsDelete.setAttribute("type", "button");
-    listItemsDelete.innerHTML = '<i class="fas fa-trash"></i>';
-    completedContainer.appendChild(ulTagDone);
-    ulTagDone.appendChild(listItems);
-    listItems.appendChild(listItemsCheckbox);
-    listItems.appendChild(listItemsDelete);
-
-    //DELETEFUNKTION
-    listItemsDelete.addEventListener("click", function () {
-      list.splice(i, 1);
-      createHTML();
-    });
-  }
-}
-
+//Funktion som displayar vår hårdkodade lista
 window.onload = function () {
   list = [task1, task2, task3, task4];
+  //localStorage.setItem("LSlist", JSON.stringify(list)); ///////////////////////// ////////
+  //let ListfromLS = localStorage.getItem(JSON.parse("LSList", list));
   createHTML();
 };
 
-//Add tasks
+//Lägg till todos genom input
 inputBtn.addEventListener("click", saveUserInput);
 function saveUserInput() {
   let inputValue = userInput.value;
@@ -151,22 +137,36 @@ function saveUserInput() {
   } else {
     let userTask = new TaskItem(inputValue, false);
     list.push(userTask);
+    //localStorage.setItem("newTask", JSON.stringify(list)); ///////
+    localStorage.setItem("LSList", JSON.stringify(list));
     createHTML();
   }
 }
 
-//FUNKTION FÖR ATT FLYTTA COMPLETED TASKS
+//Funktion för att flytta färdigmarkerade todos
 function moveToCompletedTasks(checkedList) {
+  //checkedList är objektet på pos i i listan
   ulTagDone.innerHTML = "";
-  console.log(list.isCompleted);
-  checkedList.isCompleted = !checkedList.isCompleted;
-  moveTask();
+  //console.log(list.isCompleted);
+  checkedList.isCompleted = !checkedList.isCompleted; //Toggling checkbox
+  //localStorage.setItem("completedTask", JSON.stringify(checkedList)); ///////////
+  localStorage.setItem("LSList", JSON.stringify(list));
+  createHTML();
 }
 
+sortIcon.addEventListener("click", () => {
+  let sortedList = list.sort(function (a, b) {
+    const descriptionA = a.description.toUpperCase();
+    const descriptionB = b.description.toUpperCase();
+    if (descriptionA < descriptionB) {
+      return -1;
+    }
+    if (descriptionA > descriptionB) {
+      return 1;
+    }
+    return 0;
+  });
 
-//Saker att ordna
-/* 
-- Fixa så att hela listan inte flyttar till completed tasks när en checkbox checkas i 
-- LS
-- Ordna så man kan checka i och ur tasks
-- fixa så att listan inte dubbleras när man färdigmarkerat en task och lägger till ytterligare en task efter det
+  console.log(sortedList);
+  createHTML();
+});
