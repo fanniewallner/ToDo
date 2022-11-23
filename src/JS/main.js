@@ -69,8 +69,9 @@ let task4 = new TaskItem("Finish hand-in assignment", false);
 
 list = [];
 list = [task1, task2, task3, task4];
-localStorage.setItem("LSlist", JSON.stringify(list));
-
+/*list = localStorage.getItem("items")
+  ? JSON.parse(localStorage.getItem("LSList"))
+  : [task1, task2, task3, task4]; /////////// LS get???????????????????*/
 let ulTag = document.createElement("ul");
 ulTag.classList.add("ulTag");
 
@@ -78,7 +79,6 @@ ulTag.classList.add("ulTag");
 function createHTML() {
   ulTag.innerHTML = ""; //Tömmer ulTag innan loop så att objekten av hårdkodade objekt inte dubbleras
   ulTagDone.innerHTML = ""; //Tömmer ulTagDone innan loopen så att objekten där i inte dubbleras
-  //Array.from(JSON.parse(localStorage.getItem("list"))); ////////////// Hämtar lista i text från LS och gör om till objekt
   for (let i = 0; i < list.length; i++) {
     let checkedList = list[i]; //ändra till currentobject ist för checkedlist
     listItems = document.createElement("li");
@@ -87,6 +87,7 @@ function createHTML() {
     let listItemsCheckbox = document.createElement("input"); //Skapar input som ska bli checkbox
     listItemsCheckbox.setAttribute("type", "checkbox"); //Lägg till attribut på input så att det bnlir checkbox
     listItemsCheckbox.setAttribute("id", "checked"); //Lägger till id på checkbox
+    localStorage.setItem("LSList", JSON.stringify(list));
     listItemsCheckbox.checked = checkedList.isCompleted;
     listItemsCheckbox.addEventListener("change", () => {
       //eventListener på checkbox, lyssnar efter change, triggar funktion movedToCompletedTasks
@@ -103,17 +104,18 @@ function createHTML() {
       ulTag.appendChild(listItems);
       listItems.appendChild(listItemsCheckbox);
       listItems.appendChild(listItemsDelete);
+      localStorage.setItem("LSList", JSON.stringify(list));
     } else {
       completedContainer.appendChild(ulTagDone); //Om checkboxens värde inte är false, dvs true ska den appendas till den nedre div:en med färdiga tasks
       ulTagDone.appendChild(listItems);
       listItems.appendChild(listItemsCheckbox);
       listItems.appendChild(listItemsDelete);
+      localStorage.setItem("LSList", JSON.stringify(list));
     }
 
     //Funktion som tar bort todos
     listItemsDelete.addEventListener("click", function () {
-      var deletedItem = list.splice(i, 1); //ställer sig på listan på position i och tar bort 1
-      //localStorage.setItem(JSON.stringify("deletedList", list)); ////////////////////////// LS when deleted
+      list.splice(i, 1); //ställer sig på listan på position i och tar bort 1
       createHTML();
     });
   }
@@ -122,8 +124,10 @@ function createHTML() {
 //Funktion som displayar vår hårdkodade lista
 window.onload = function () {
   list = [task1, task2, task3, task4];
-  //localStorage.setItem("LSlist", JSON.stringify(list)); ///////////////////////// ////////
-  //let ListfromLS = localStorage.getItem(JSON.parse("LSList", list));
+  localStorage.setItem("LSList", JSON.stringify(list));
+  /*localStorage.getItem("items")
+    ? JSON.parse(localStorage.getItem("LSList"))
+    : []; /////////// LS get???????????????????*/
   createHTML();
 };
 
@@ -137,7 +141,6 @@ function saveUserInput() {
   } else {
     let userTask = new TaskItem(inputValue, false);
     list.push(userTask);
-    //localStorage.setItem("newTask", JSON.stringify(list)); ///////
     localStorage.setItem("LSList", JSON.stringify(list));
     createHTML();
   }
@@ -147,9 +150,7 @@ function saveUserInput() {
 function moveToCompletedTasks(checkedList) {
   //checkedList är objektet på pos i i listan
   ulTagDone.innerHTML = "";
-  //console.log(list.isCompleted);
   checkedList.isCompleted = !checkedList.isCompleted; //Toggling checkbox
-  //localStorage.setItem("completedTask", JSON.stringify(checkedList)); ///////////
   localStorage.setItem("LSList", JSON.stringify(list));
   createHTML();
 }
@@ -170,3 +171,14 @@ sortIcon.addEventListener("click", () => {
   console.log(sortedList);
   createHTML();
 });
+
+/*function saveToLS(TaskItem) {
+  let list = [task1, task2, task3, task4];
+  if (localStorage.getItem("taskitems") === null) {
+    list = [];
+  } else {
+    list = JSON.parse(localStorage.getItem("list"));
+  }
+  list.push(TaskItem);
+  localStorage.setItem("list", JSON.stringify(list));
+}*/
