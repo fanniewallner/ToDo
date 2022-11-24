@@ -69,9 +69,6 @@ let task4 = new TaskItem("Finish hand-in assignment", false);
 
 list = [];
 list = [task1, task2, task3, task4];
-/*list = localStorage.getItem("items")
-  ? JSON.parse(localStorage.getItem("LSList"))
-  : [task1, task2, task3, task4]; /////////// LS get???????????????????*/
 let ulTag = document.createElement("ul");
 ulTag.classList.add("ulTag");
 
@@ -123,11 +120,7 @@ function createHTML() {
 
 //Funktion som displayar vår hårdkodade lista
 window.onload = function () {
-  list = [task1, task2, task3, task4];
-  localStorage.setItem("LSList", JSON.stringify(list));
-  /*localStorage.getItem("items")
-    ? JSON.parse(localStorage.getItem("LSList"))
-    : []; /////////// LS get???????????????????*/
+  list = JSON.parse(localStorage.getItem("LSList") || "[]");
   createHTML();
 };
 
@@ -171,14 +164,3 @@ sortIcon.addEventListener("click", () => {
   console.log(sortedList);
   createHTML();
 });
-
-/*function saveToLS(TaskItem) {
-  let list = [task1, task2, task3, task4];
-  if (localStorage.getItem("taskitems") === null) {
-    list = [];
-  } else {
-    list = JSON.parse(localStorage.getItem("list"));
-  }
-  list.push(TaskItem);
-  localStorage.setItem("list", JSON.stringify(list));
-}*/
